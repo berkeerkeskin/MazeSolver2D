@@ -1,20 +1,41 @@
+#global variables
+starting = []
+bonus = []
+goal = []
 
-#EXAMPLE DFS
-graph= {
-  #'5' : ['3','7'],
-  #'3' : ['2', '4'],
-  #'7' : ['8'],
-  #'2' : [],
-  #'4' : ['8'],
-  #'8' : []
-}
-visited = set()
-def dfs(visited, graph, node):
-    if node not in visited:
-        print(node)
-        visited.add(node)
-        for neighbour in graph[node]:
-            dfs(visited, graph, neighbour)
+#string[start: end: step]
+def readSquares(squares):
+    for line in squares.splitlines():
+        index = int(line[2:])
+        if line[0] == "S":
+            starting.append(index)
+        elif line[0] == "T":
+            bonus.append(index)
+        elif line[0] == "G":
+            goal.append(index)
+            
+def checkGoalState(goal, cellIndex):
+    for i in range(len(goal)):
+        if goal[i] == cellIndex:
+            #yazım asamasında
+            return 0
+            
+#read maze
+with open('../input/project-maze-input2/maze.txt', 'r') as file:
+    text = file.read()
 
-print("dfs starting from node "+ '5'+"\n")
-dfs(visited,graph , '5')
+#read important squares into string
+with open('../input/squares/square_indexes_and_types.txt', 'r') as file:
+    squares = file.read()
+#read important squares into lists
+readSquares(squares)
+
+#split text file into an array
+array = text.split("; ")
+#dictionary for possible moves
+possibleMoves={}
+
+for i in range(64):
+    array[i] = array[i].replace("\'", "")
+    cell = array[i].split(", ")
+    possibleMoves[i] = cell
