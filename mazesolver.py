@@ -127,3 +127,19 @@ def uniform_cost_search(starting, bonus, goal, possibleMoves):
                     priority_queue[child] = cost
 
 uniform_cost_search(starting, bonus, goal, possibleMoves)
+
+
+#ŞU AN SADECE DFS YAPIYO DEVAM EDİCEM!!!!
+visited = set()
+print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+def depth_first_search(visited, graph, cell) :
+    if cell not in visited:
+        print (cell, end="-")
+        visited.add(cell)
+        for neighbour in graph[cell]:
+            depth_first_search(visited, graph, neighbour)
+print("dfs solution: ")
+depth_first_search(visited, possibleMoves,starting[0])
+
+
+
