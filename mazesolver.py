@@ -131,15 +131,21 @@ uniform_cost_search(starting, bonus, goal, possibleMoves)
 
 #ŞU AN SADECE DFS YAPIYO DEVAM EDİCEM!!!!
 visited = set()
+solcost= 0
 print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 def depth_first_search(visited, graph, cell) :
+    global solcost
     if cell not in visited:
         print (cell, end="-")
         visited.add(cell)
         for neighbour in graph[cell]:
             depth_first_search(visited, graph, neighbour)
+            solcost= solcost+GetCellCost(bonus,goal,cell)
 print("dfs solution: ")
 depth_first_search(visited, possibleMoves,starting[0])
+print("\n" + str(solcost))
+
+
 
 
 
