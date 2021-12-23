@@ -128,22 +128,70 @@ def uniform_cost_search(starting, bonus, goal, possibleMoves):
 
 uniform_cost_search(starting, bonus, goal, possibleMoves)
 
+print("!!!!!!!!!!!!!!!!!!!!!!!")
+def dfs(startindex, graph):
+    frontier = list()
+    frontier.append(startindex)
+    expanded = list()
+    explored = list()
+    while len(frontier) != 0:
+        currentindex = frontier.pop()
+        if currentindex in expanded:
+            continue
+        if IsGoalState(goal, currentindex):
+            print("expanded set: " + "-".join(map(str, expanded)))
+            print("frontier: " + "-".join(map(str, frontier)))
+            for expandednode in expanded:
+                #  all items of "graph[expandednode]" are in "expanded"
+                if all(item in expanded for item in graph[expandednode]):
+                    explored.append(expandednode)
+            print("explored set: " + "-".join(map(str, explored)))
+            return
+        for neighbour in graph[currentindex]:
+            if neighbour in frontier:
+                frontier.pop()
+            frontier.append(neighbour)
+        expanded.append(currentindex)
 
-#ŞU AN SADECE DFS YAPIYO DEVAM EDİCEM!!!!
-visited = set()
-solcost= 0
-print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-def depth_first_search(visited, graph, cell) :
-    global solcost
-    if cell not in visited:
-        print (cell, end="-")
-        visited.add(cell)
-        for neighbour in graph[cell]:
-            depth_first_search(visited, graph, neighbour)
-            solcost= solcost+GetCellCost(bonus,goal,cell)
-print("dfs solution: ")
-depth_first_search(visited, possibleMoves,starting[0])
-print("\n" + str(solcost))
+dfs(starting[0], possibleMoves)
+
+
+
+
+
+# #ŞU AN SADECE DFS YAPIYO DEVAM EDİCEM!!!!
+# explored_set = list()
+# solset= list()
+# dfs_frontier= list()
+# solcost= 0
+# dfsgoalreached = False
+# dfs_fr_size= 0
+# print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+# def depth_first_search(solset, explored_set, graph, cell) :
+#     global solcost
+#     global dfsgoalreached
+#     global dfs_fr_size
+#     if cell not in explored_set and not dfsgoalreached:
+#         explored_set.append(cell)
+#         for neighbour in graph[cell]:
+#             dfs_frontier.append(neighbour)
+#             if (len(dfs_frontier)>dfs_fr_size):
+#                 dfs_fr_size=len(dfs_frontier)
+#             if IsGoalState(goal, cell):
+#                 solset.append(cell)
+#                 dfsgoalreached = True
+#             else:
+#                 dfs_frontier.pop()
+#                 depth_first_search(solset, explored_set, graph, neighbour)
+#                 if not dfsgoalreached:
+#                     solcost= solcost+GetCellCost(bonus,goal,cell)
+#                     solset.append(cell)
+#
+#
+# depth_first_search(solset, explored_set, possibleMoves, starting[0])
+# print(dfs_fr_size)
+# print(str(solcost))
+# print("explored set: " + "-".join(map(str, explored_set)))
 
 
 
