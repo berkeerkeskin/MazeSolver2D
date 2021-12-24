@@ -1,3 +1,4 @@
+from collections import deque
 #global variables
 starting = []
 trap = []
@@ -178,8 +179,58 @@ def dfs(startindex, graph):
             solutionpath.pop()
             checkdeadendindex = solutionpath[len(solutionpath)-1]
 
+
 dfs(starting[0], possibleMoves)
 
+# breadth first search algorithm
+
+
+def bfs(bonus):
+    # initialization of queue
+    queue = deque()
+    # root node in the queue at the beginning
+    queue.append(starting[0])
+    # initialization of the variables
+    start_cell = starting[0]
+    current_cell = start_cell
+    # paths and costs
+    paths = {}
+    costs = {}
+    list_queue = {}
+    # assign values paths and costs
+    paths[start_cell] = str(start_cell)
+    costs[start_cell] = 0
+    explored_set = []
+
+    while len(queue) != 0:
+        # pop
+        current_cell = queue.pop()
+        # append current cell to explored set
+        explored_set.append(current_cell)
+        # expand the node into its children and add it to frontier
+        children = possibleMoves[current_cell]
+        for child in children:
+            if child not in explored_set:
+                if IsGoalState(goal, child):
+                    path = paths[current_cell] + "-" + str(child)
+                    cost = costs[current_cell] + GetCellCost(bonus, goal, child)
+                    print("The cost of solution is " + str(cost))
+                    print("The maximum size of frontier is " + str(len(children)))
+                    print("The maximum size of explored cell is " + str(len(explored_set)))
+                    print("The solution path is " + path)
+
+                    return "finished"
+                else:
+                    queue.appendleft(child)
+                    path = paths[current_cell] + "-" + str(child)
+                    paths[child] = path
+                    cost = costs[current_cell] + GetCellCost(bonus, goal, child)
+                    costs[child] = cost
+                    list_queue[child] = cost
+
+
+print("\n---Breadth First Search---")
+bfs(trap)
 
 
 
