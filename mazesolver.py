@@ -31,7 +31,7 @@ with open('square_indexes_and_types.txt', 'r') as file:
 readSquares(squares)
 
 #split text file into an array
-array = text.split("; ")
+array = text.split(";\n")
 #dictionary for possible moves
 possibleMoves={}
 
