@@ -21,11 +21,11 @@ def IsGoalState(goal, cellIndex):
     return 0
 
 #read maze
-with open('../input/project-maze-input2/maze.txt', 'r') as file:
+with open('maze.txt', 'r') as file:
     text = file.read()
 
 #read important squares
-with open('../input/squares2/square_indexes_and_types.txt', 'r') as file:
+with open('square_indexes_and_types.txt', 'r') as file:
     squares = file.read()
 #read important squares
 readSquares(squares)
@@ -154,44 +154,6 @@ def dfs(startindex, graph):
         expanded.append(currentindex)
 
 dfs(starting[0], possibleMoves)
-
-
-
-
-
-# #ŞU AN SADECE DFS YAPIYO DEVAM EDİCEM!!!!
-# explored_set = list()
-# solset= list()
-# dfs_frontier= list()
-# solcost= 0
-# dfsgoalreached = False
-# dfs_fr_size= 0
-# print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-# def depth_first_search(solset, explored_set, graph, cell) :
-#     global solcost
-#     global dfsgoalreached
-#     global dfs_fr_size
-#     if cell not in explored_set and not dfsgoalreached:
-#         explored_set.append(cell)
-#         for neighbour in graph[cell]:
-#             dfs_frontier.append(neighbour)
-#             if (len(dfs_frontier)>dfs_fr_size):
-#                 dfs_fr_size=len(dfs_frontier)
-#             if IsGoalState(goal, cell):
-#                 solset.append(cell)
-#                 dfsgoalreached = True
-#             else:
-#                 dfs_frontier.pop()
-#                 depth_first_search(solset, explored_set, graph, neighbour)
-#                 if not dfsgoalreached:
-#                     solcost= solcost+GetCellCost(bonus,goal,cell)
-#                     solset.append(cell)
-#
-#
-# depth_first_search(solset, explored_set, possibleMoves, starting[0])
-# print(dfs_fr_size)
-# print(str(solcost))
-# print("explored set: " + "-".join(map(str, explored_set)))
 
 
 
