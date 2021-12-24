@@ -1,6 +1,6 @@
 #global variables
 starting = []
-bonus = []
+trap = []
 goal = []
 
 #string[start: end: step]
@@ -10,10 +10,15 @@ def readSquares(squares):
         if line[0] == "S":
             starting.append(index)
         elif line[0] == "T":
-            bonus.append(index)
+            trap.append(index)
         elif line[0] == "G":
             goal.append(index)
-            
+
+
+def coordinate_from_index(index):
+    return "(" + str((index % 8) + 1) + ", " + str((index // 8) + 1) + ")"
+
+
 def IsGoalState(goal, cellIndex):
     for i in range(len(goal)):
         if goal[i] == cellIndex:
@@ -76,9 +81,9 @@ def dequeue(priority_queue):
     #return statement in string
     return extracted_element
 
-def GetCellCost(bonus, goal, currentcell):
-    if currentcell in bonus:
-        return -8
+def GetCellCost(trap, goal, currentcell):
+    if currentcell in trap:
+        return 10
     elif currentcell in goal:
         return 0
     else:
@@ -126,14 +131,19 @@ def uniform_cost_search(starting, bonus, goal, possibleMoves):
                     costs[child] = cost
                     priority_queue[child] = cost
 
-uniform_cost_search(starting, bonus, goal, possibleMoves)
+uniform_cost_search(starting, trap, goal, possibleMoves)
 
 print("!!!!!!!!!!!!!!!!!!!!!!!")
+
+
 def dfs(startindex, graph):
     frontier = list()
+    frontier_max_size = 0
     frontier.append(startindex)
     expanded = list()
     explored = list()
+    solutionpath = list()
+    solutioncost = 0
     while len(frontier) != 0:
         currentindex = frontier.pop()
         if currentindex in expanded:
@@ -141,17 +151,32 @@ def dfs(startindex, graph):
         if IsGoalState(goal, currentindex):
             print("expanded set: " + "-".join(map(str, expanded)))
             print("frontier: " + "-".join(map(str, frontier)))
+            print("frontier max size: " + str(frontier_max_size))
+            solutionpath.append(currentindex)
+            print("solution path: " + " – ".join(map(coordinate_from_index, solutionpath)))
+            for solindex in solutionpath:
+                solutioncost += GetCellCost(trap, goal, solindex)
+            print("solution cost: " + str(solutioncost))
             for expandednode in expanded:
                 #  all items of "graph[expandednode]" are in "expanded"
                 if all(item in expanded for item in graph[expandednode]):
                     explored.append(expandednode)
             print("explored set: " + "-".join(map(str, explored)))
+            print("explored maximum size: " + str(len(explored)))
             return
         for neighbour in graph[currentindex]:
             if neighbour in frontier:
-                frontier.pop()
-            frontier.append(neighbour)
+                frontier.remove(neighbour)
+            if neighbour not in expanded:
+                frontier.append(neighbour)
+                if len(frontier) > frontier_max_size:
+                    frontier_max_size = len(frontier)
         expanded.append(currentindex)
+        solutionpath.append(currentindex)
+        checkdeadendindex = currentindex
+        while all(item in expanded for item in graph[checkdeadendindex]):
+            solutionpath.pop()
+            checkdeadendindex = solutionpath[len(solutionpath)-1]
 
 dfs(starting[0], possibleMoves)
 
