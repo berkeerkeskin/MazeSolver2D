@@ -90,7 +90,7 @@ def GetCellCost(trap, goal, currentcell):
     else:
         return 1
 
-def uniform_cost_search(starting, bonus, goal, possibleMoves):
+def uniform_cost_search(starting, trap, goal, possibleMoves):
     ####initialization of variables####
     startcell = starting[0]
     currentcell = startcell
@@ -110,6 +110,7 @@ def uniform_cost_search(starting, bonus, goal, possibleMoves):
     #step4-check if its goal state, if yes print all the outputs,else return to the step1
     while bool(priority_queue):
         #dequeue - extracted element is an integer
+        #print(priority_queue)
         extracted_element = dequeue(priority_queue)
         #update the current cell
         currentcell = extracted_element
@@ -121,18 +122,120 @@ def uniform_cost_search(starting, bonus, goal, possibleMoves):
             if child not in explored_set:
                 if IsGoalState(goal, child):
                     path = paths[currentcell] + "-" + str(child)
-                    cost = costs[currentcell] + GetCellCost(bonus, goal, child)
+                    cost = costs[currentcell] + GetCellCost(trap, goal, child)
                     print(path)
                     print(cost)
-                    return "finished"
+                    print("finished")
                 else:
                     path = paths[currentcell] + "-" + str(child)
                     paths[child] = path
-                    cost = costs[currentcell] + GetCellCost(bonus, goal, child)
+                    cost = costs[currentcell] + GetCellCost(trap, goal, child)
                     costs[child] = cost
                     priority_queue[child] = cost
-
+                    
 uniform_cost_search(starting, trap, goal, possibleMoves)
+
+def FindIndex(cellIndex):
+    cellIndex = cellIndex + 1
+    x = cellIndex % 8
+    y = (cellIndex - x) / 8
+    XandY = []
+    XandY.append(int(x))
+    XandY.append(int(y))
+    return XandY
+#calculates manhattan distance, we need our square and all of the goal squares
+def CalculateHN(goal, currentcell):
+    currentXandY = FindIndex(currentcell)
+    distances = []
+    
+    for goalcell in goal:
+        goalXandY = FindIndex(goalcell)
+        absoluteX = abs(goalXandY[0] - currentXandY[0])
+        absoluteY = abs(goalXandY[1] - currentXandY[1])
+        manhattanDistance = absoluteX + absoluteY
+        distances.append(manhattanDistance)
+    return min(distances)
+    
+def calculateScores(goal, cellIndex, costs, hn, gn, fn):
+    #calculate hn
+    hn[cellIndex] = CalculateHN(goal, cellIndex)
+    #calculate gn
+    gn[cellIndex] = costs[cellIndex]
+    #calculate fn
+    fn[cellIndex] = hn[cellIndex] + gn[cellIndex]
+    return fn[cellIndex]
+    
+def GetLowestFScore(openlist):
+    fscores = []
+    extracted_element = 0
+    #print(openlist)
+    for item in openlist:
+        #print(openlist[item])
+        fscores.append(openlist[item])
+    
+    min_cost = min(fscores)
+    min_cost_index = fscores.index(min_cost)
+    index = 0
+    for item in openlist:
+        if index == min_cost_index:
+            extracted_element = item
+            break
+        index = index + 1
+    return extracted_element
+    
+def Astar(starting, trap, goal, possibleMoves):
+    startcell = starting[0]
+    currentcell = startcell
+    openlist = {} #value holds f score
+    parentlist = {}
+    closedlist = {} #value holds f score
+    costs = {}
+    hn = {}
+    gn = {}
+    fn = {}
+    costs[currentcell] = 0
+    hn[currentcell] = 0
+    gn[currentcell] = 0
+    fn[currentcell] = 0
+    parentlist[currentcell] = 0
+    openlist[currentcell] = fn[currentcell]
+    
+    while bool(openlist):
+        #get the lowest f score
+        currentcell = GetLowestFScore(openlist)
+        #check if it is goal state
+        #print(currentcell)
+        if IsGoalState(goal, currentcell):
+            path = []
+            current = currentcell
+            while parentlist[current] is not 0:
+                path.append(current)
+                current = parentlist[current]
+                
+            print("finished")
+            print(fn[currentcell])
+            return path[::-1]
+        #add current to the closedlist
+        closedlist[currentcell] = openlist[currentcell]
+        #remove current from openlist
+        openlist.pop(currentcell)
+        #get the children of current
+        children = possibleMoves[currentcell]
+        for child in children:
+            # Child is on the closed list
+            if child in closedlist:
+                continue
+            # Create the f, g, and h values
+            costs[child] = costs[currentcell] + GetCellCost(trap, goal, child)
+            fscore = calculateScores(goal, child, costs, hn, gn, fn)
+            # Child is already in the open list
+            for open_node in openlist:
+                if child == open_node and gn[child] > gn[open_node]:
+                    continue
+            openlist[child] = fscore
+            parentlist[child] = currentcell
+
+Astar(starting, trap, goal, possibleMoves)
 
 
 def dfs(startindex, graph):
