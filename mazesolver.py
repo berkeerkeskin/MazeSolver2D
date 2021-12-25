@@ -134,10 +134,9 @@ def uniform_cost_search(starting, bonus, goal, possibleMoves):
 
 uniform_cost_search(starting, trap, goal, possibleMoves)
 
-print("!!!!!!!!!!!!!!!!!!!!!!!")
-
 
 def dfs(startindex, graph):
+    print("---Depth First Search---")
     frontier = list()
     frontier_max_size = 0
     frontier.append(startindex)
@@ -150,8 +149,9 @@ def dfs(startindex, graph):
         if currentindex in expanded:
             continue
         if IsGoalState(goal, currentindex):
-            print("expanded set: " + "-".join(map(str, expanded)))
-            print("frontier: " + "-".join(map(str, frontier)))
+            # print("expanded set: " + "-".join(map(str, expanded)))
+            print("number of expanded nodes: " + str(len(expanded)))
+            # print("frontier: " + "-".join(map(str, frontier)))
             print("frontier max size: " + str(frontier_max_size))
             solutionpath.append(currentindex)
             print("solution path: " + " – ".join(map(coordinate_from_index, solutionpath)))
@@ -162,7 +162,7 @@ def dfs(startindex, graph):
                 #  all items of "graph[expandednode]" are in "expanded"
                 if all(item in expanded for item in graph[expandednode]):
                     explored.append(expandednode)
-            print("explored set: " + "-".join(map(str, explored)))
+            # print("explored set: " + "-".join(map(str, explored)))
             print("explored maximum size: " + str(len(explored)))
             return
         for neighbour in graph[currentindex]:
@@ -181,8 +181,87 @@ def dfs(startindex, graph):
 
 
 dfs(starting[0], possibleMoves)
+print()
 
-# breadth first search algorithm
+# IDS
+
+
+def dls(startindex, graph, depth_limit):
+    frontier = list()
+    frontier_max_size = 0
+    frontier.append(startindex)
+    expanded = list()
+    explored = list()
+    solutionpath = list()
+    solutioncost = 0
+    while len(frontier) != 0:
+        currentindex = frontier.pop()
+        if currentindex in expanded:
+            continue
+        if IsGoalState(goal, currentindex):
+            # print("expanded set: " + "-".join(map(str, expanded)))
+            print("number of expanded nodes: " + str(len(expanded)))
+            # print("frontier: " + "-".join(map(str, frontier)))
+            print("frontier max size: " + str(frontier_max_size))
+            solutionpath.append(currentindex)
+            print("solution path: " + " – ".join(map(coordinate_from_index, solutionpath)))
+            for solindex in solutionpath:
+                solutioncost += GetCellCost(trap, goal, solindex)
+            print("solution cost: " + str(solutioncost))
+            for expandednode in expanded:
+                #  all items of "graph[expandednode]" are in "expanded"
+                if all(item in expanded for item in graph[expandednode]):
+                    explored.append(expandednode)
+            # print("explored set: " + "-".join(map(str, explored)))
+            print("explored maximum size: " + str(len(explored)))
+            return True
+        for neighbour in graph[currentindex]:
+            if neighbour in frontier:
+                frontier.remove(neighbour)
+            if neighbour not in expanded:
+                frontier.append(neighbour)
+                if len(frontier) > frontier_max_size:
+                    frontier_max_size = len(frontier)
+        expanded.append(currentindex)
+        solutionpath.append(currentindex)
+        if len(solutionpath) - 1 == depth_limit:
+            if solutionpath:
+                solutionpath.pop()
+            else:
+                return False
+            if solutionpath:
+                checklimitindex = solutionpath.pop()
+            else:
+                return False
+            while all(item in expanded for item in graph[checklimitindex]):
+                if solutionpath:
+                    checklimitindex = solutionpath.pop()
+                else:
+                    return False
+            solutionpath.append(checklimitindex)
+            for n in graph[currentindex]:
+                if n in frontier:
+                    frontier.remove(n)
+            expanded.remove(currentindex)
+            continue
+        checkdeadendindex = currentindex
+        while all(item in expanded for item in graph[checkdeadendindex]):
+            solutionpath.pop()
+            checkdeadendindex = solutionpath[-1]
+        continue
+    return False
+
+
+def ids(startindex, graph, max_depth):
+    print("---Iterative Deepening Search---")
+    for i in range(max_depth + 1):
+        if dls(startindex, graph, i):
+            return True
+    print("Path not found!")
+    return False
+
+
+ids(starting[0], possibleMoves, 11)
 
 
 def bfs(bonus):
