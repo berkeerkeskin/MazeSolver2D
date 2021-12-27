@@ -1,8 +1,10 @@
 from collections import deque
+
 #global variables
 starting = []
 trap = []
 goal = []
+node_number = 64
 
 #string[start: end: step]
 def readSquares(squares):
@@ -17,7 +19,7 @@ def readSquares(squares):
 
 
 def coordinate_from_index(index):
-    return "(" + str((index % 8) + 1) + ", " + str((index // 8) + 1) + ")"
+    return "(" + str((index // 8) + 1) + ", " + str((index % 8) + 1) + ")"
 
 
 def IsGoalState(goal, cellIndex):
@@ -41,7 +43,7 @@ array = text.split(";\n")
 #dictionary for possible moves
 possibleMoves={}
 
-for i in range(64):
+for i in range(node_number):
     array[i] = array[i].replace("\'", "")
     cell_name = array[i].split(", ")
     cell_index = []
@@ -86,7 +88,7 @@ def GetCellCost(trap, goal, currentcell):
     if currentcell in trap:
         return 10
     elif currentcell in goal:
-        return 0
+        return 1
     else:
         return 1
 
@@ -208,7 +210,7 @@ def Astar(starting, trap, goal, possibleMoves):
         if IsGoalState(goal, currentcell):
             path = []
             current = currentcell
-            while parentlist[current] is not 0:
+            while parentlist[current] != 0:
                 path.append(current)
                 current = parentlist[current]
                 
@@ -383,7 +385,10 @@ def bfs(bonus):
     paths[start_cell] = str(start_cell)
     costs[start_cell] = 0
     explored_set = []
-
+    # solution path
+    solution_path = list()
+    number_of_expanded_nodes = 0
+    solution_path = []
     while len(queue) != 0:
         # pop
         current_cell = queue.pop()
@@ -391,16 +396,18 @@ def bfs(bonus):
         explored_set.append(current_cell)
         # expand the node into its children and add it to frontier
         children = possibleMoves[current_cell]
+        number_of_expanded_nodes += 1
         for child in children:
             if child not in explored_set:
                 if IsGoalState(goal, child):
+                    solution_path.append(child)
                     path = paths[current_cell] + "-" + str(child)
                     cost = costs[current_cell] + GetCellCost(bonus, goal, child)
                     print("The cost of solution is " + str(cost))
+                    print("The number of expanded nodes is  " + str(number_of_expanded_nodes))
                     print("The maximum size of frontier is " + str(len(children)))
                     print("The maximum size of explored cell is " + str(len(explored_set)))
-                    print("The solution path is " + path)
-
+                    print("The solution path is " + " – ".join(map(coordinate_from_index, solution_path)))
                     return "finished"
                 else:
                     queue.appendleft(child)
@@ -414,6 +421,91 @@ def bfs(bonus):
 print("\n---Breadth First Search---")
 bfs(trap)
 
+#coordinate of index
+def coordinate_of_index(path):
+    string_path = ""
+    for coordinate in range(path):
+        index = path.get(coordinate)
+        row = (index % 8) + 1
+        column = (index // 8) + 1
+        coordinate.append(row)
+        coordinate.append(column)
+    return string_path
 
 
+
+# calculate f score
+def calculate_scores(goal, cellIndex, costs, hn, fn):
+    #calculate hn
+    hn[cellIndex] = CalculateHN(goal, cellIndex)
+    #calculate fn
+    fn[cellIndex] = hn[cellIndex]
+    return fn[cellIndex]
+
+# Greedy Best First Search
+# key = h(n)
+def gbfs(starting, trap, goal, possibleMoves):
+    # initialize variables
+    start_cell = starting[0]
+    current_cell = start_cell
+    open_list = {}
+    parent_list = {}
+    closed_list = {}
+    costs = {}
+    # f(n) = h(n)
+    hn = {}
+    fn = {}
+    costs[current_cell] = 0
+    hn[current_cell] = 0
+    fn[current_cell] = 0
+    parent_list[current_cell] = -1
+    open_list[current_cell] = 0
+    open_list[current_cell] = fn[current_cell]
+    number_of_expanded_nodes = 0
+    max_frontier = 0
+    max_explored = 0
+
+    while bool(open_list):
+        # get the lowest f score
+        current_cell = GetLowestFScore(open_list)
+        if IsGoalState(goal, current_cell):
+            path = []
+            current = current_cell
+            while parent_list[current] != -1:
+                path.append(current)
+                current = parent_list[current]
+
+            path.append(start_cell)
+
+            print("The cost of solution is " + str(costs[current_cell]))
+            print("The number of expanded nodes is " + str(number_of_expanded_nodes))
+            print("The maximum size of frontier is " + str(max_frontier))
+            print("The maximum size of explored cell is " + str(max_explored))
+            print("The solution path is " + " – ".join(map(coordinate_from_index, path[::-1])))
+            return "finished"
+
+        closed_list[current_cell] = open_list[current_cell]
+        open_list.pop(current_cell)
+        number_of_expanded_nodes += 1
+        children = possibleMoves[current_cell]
+
+        for child in children:
+            if child in closed_list:
+                continue
+
+            costs[child] = costs[current_cell] + GetCellCost(trap, goal, child)
+            fscore = calculate_scores(goal, child, costs, hn, fn)
+            for open_node in open_list:
+                if child == open_node and hn[child] > hn[open_node]:
+                    continue
+            open_list[child] = fscore
+            parent_list[child] = current_cell
+
+        if max_frontier < len(children):
+            max_frontier = len(children)
+        if max_explored < len(closed_list):
+            max_explored = len(closed_list)
+
+print("\n---Greedy Best First Search---")
+gbfs(starting, trap, goal, possibleMoves)
 
