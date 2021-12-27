@@ -104,6 +104,9 @@ def uniform_cost_search(starting, trap, goal, possibleMoves):
     paths[startcell] = str(startcell)
     costs[startcell] = 0
     explored_set = []
+    numberOfExpandedNodes = 0
+    maxSizeOfFrontier = 0
+    maxSizeOfExploredSet = 0
     #root node in the priority queue at the beginning
     priority_queue[startcell] = 0
     #step1-expand node
@@ -111,6 +114,10 @@ def uniform_cost_search(starting, trap, goal, possibleMoves):
     #step3-choose minimum cost, if equal expand east, south, west, north in order
     #step4-check if its goal state, if yes print all the outputs,else return to the step1
     while bool(priority_queue):
+        if len(priority_queue) > maxSizeOfFrontier:
+            maxSizeOfFrontier = len(priority_queue)
+        if len(explored_set) > maxSizeOfExploredSet:
+            maxSizeOfExploredSet = len(explored_set)
         #dequeue - extracted element is an integer
         #print(priority_queue)
         extracted_element = dequeue(priority_queue)
@@ -120,14 +127,19 @@ def uniform_cost_search(starting, trap, goal, possibleMoves):
         explored_set.append(extracted_element)
         #expand the node into its children and add it to frontier
         children = possibleMoves[currentcell]
+        numberOfExpandedNodes = numberOfExpandedNodes + 1
         for child in children:
             if child not in explored_set:
                 if IsGoalState(goal, child):
                     path = paths[currentcell] + "-" + str(child)
                     cost = costs[currentcell] + GetCellCost(trap, goal, child)
-                    print(path)
-                    print(cost)
-                    print("finished")
+                    print("--- Uniform Cost Search ---")
+                    print("The cost of the solution: {0}".format(cost))
+                    print("The number of expanded nodes: {0}".format(numberOfExpandedNodes))
+                    print("The maximum size of the frontier: {0}".format(maxSizeOfFrontier))
+                    print("The maximum size of the explored set: {0}".format(maxSizeOfExploredSet))
+                    print("Path: {0}".format(path))
+                    return
                 else:
                     path = paths[currentcell] + "-" + str(child)
                     paths[child] = path
@@ -199,10 +211,16 @@ def Astar(starting, trap, goal, possibleMoves):
     hn[currentcell] = 0
     gn[currentcell] = 0
     fn[currentcell] = 0
-    parentlist[currentcell] = 0
+    parentlist[currentcell] = -1
     openlist[currentcell] = fn[currentcell]
-    
+    numberOfExpandedNodes = 0
+    maxSizeOfFrontier = 0
+    maxSizeOfExploredSet = 0
     while bool(openlist):
+        if len(openlist) > maxSizeOfFrontier:
+            maxSizeOfFrontier = len(openlist)
+        if len(closedlist) > maxSizeOfExploredSet:
+            maxSizeOfExploredSet = len(closedlist)
         #get the lowest f score
         currentcell = GetLowestFScore(openlist)
         #check if it is goal state
@@ -210,12 +228,14 @@ def Astar(starting, trap, goal, possibleMoves):
         if IsGoalState(goal, currentcell):
             path = []
             current = currentcell
-            while parentlist[current] != 0:
+            while parentlist[current] is not -1:
                 path.append(current)
                 current = parentlist[current]
-                
-            print("finished")
-            print(fn[currentcell])
+            print("--- A* Algorithm ---")
+            print("The cost of the solution: {0}".format(fn[currentcell]))
+            print("The number of expanded nodes: {0}".format(numberOfExpandedNodes))
+            print("The maximum size of the frontier: {0}".format(maxSizeOfFrontier))
+            print("The maximum size of the explored set: {0}".format(maxSizeOfExploredSet))
             return path[::-1]
         #add current to the closedlist
         closedlist[currentcell] = openlist[currentcell]
@@ -223,6 +243,7 @@ def Astar(starting, trap, goal, possibleMoves):
         openlist.pop(currentcell)
         #get the children of current
         children = possibleMoves[currentcell]
+        numberOfExpandedNodes = numberOfExpandedNodes + 1
         for child in children:
             # Child is on the closed list
             if child in closedlist:
@@ -236,7 +257,7 @@ def Astar(starting, trap, goal, possibleMoves):
                     continue
             openlist[child] = fscore
             parentlist[child] = currentcell
-
+            
 Astar(starting, trap, goal, possibleMoves)
 
 
