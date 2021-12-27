@@ -1,6 +1,6 @@
 east, south;
 south, west;
- east, south;
+east, south;
 east, west;
 east, south, west;
 east, west;

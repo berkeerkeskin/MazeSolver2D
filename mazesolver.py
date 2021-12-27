@@ -29,11 +29,11 @@ def IsGoalState(goal, cellIndex):
     return 0
 
 #read maze
-with open('maze.txt', 'r') as file:
+with open('our_maze.txt', 'r') as file:
     text = file.read()
 
 #read important squares
-with open('square_indexes_and_types.txt', 'r') as file:
+with open('square_and_indexes_and_types_our.txt', 'r') as file:
     squares = file.read()
 #read important squares
 readSquares(squares)
