@@ -118,7 +118,6 @@ def uniform_cost_search(starting, trap, goal, possibleMoves):
         if len(explored_set) > maxSizeOfExploredSet:
             maxSizeOfExploredSet = len(explored_set)
         #dequeue - extracted element is an integer
-        #print(priority_queue)
         extracted_element = dequeue(priority_queue)
         #update the current cell
         currentcell = extracted_element
@@ -157,7 +156,9 @@ def FindIndex(cellIndex):
     XandY.append(int(x))
     XandY.append(int(y))
     return XandY
-#calculates manhattan distance, we need our square and all of the goal squares
+
+
+# calculates manhattan distance, we need our square and all of the goal squares
 def CalculateHN(goal, currentcell):
     currentXandY = FindIndex(currentcell)
     distances = []
@@ -171,20 +172,18 @@ def CalculateHN(goal, currentcell):
     return min(distances)
     
 def calculateScores(goal, cellIndex, costs, hn, gn, fn):
-    #calculate hn
+    # calculate hn
     hn[cellIndex] = CalculateHN(goal, cellIndex)
-    #calculate gn
+    # calculate gn
     gn[cellIndex] = costs[cellIndex]
-    #calculate fn
+    # calculate fn
     fn[cellIndex] = hn[cellIndex] + gn[cellIndex]
     return fn[cellIndex]
     
 def GetLowestFScore(openlist):
     fscores = []
     extracted_element = 0
-    #print(openlist)
     for item in openlist:
-        #print(openlist[item])
         fscores.append(openlist[item])
     
     min_cost = min(fscores)
@@ -200,9 +199,10 @@ def GetLowestFScore(openlist):
 def Astar(starting, trap, goal, possibleMoves):
     startcell = starting[0]
     currentcell = startcell
-    openlist = {} #value holds f score
+    openlist = {}
     parentlist = {}
-    closedlist = {} #value holds f score
+    # value holds f score
+    closedlist = {}
     costs = {}
     hn = {}
     gn = {}
@@ -221,10 +221,9 @@ def Astar(starting, trap, goal, possibleMoves):
             maxSizeOfFrontier = len(openlist)
         if len(closedlist) > maxSizeOfExploredSet:
             maxSizeOfExploredSet = len(closedlist)
-        #get the lowest f score
+        # get the lowest f score
         currentcell = GetLowestFScore(openlist)
-        #check if it is goal state
-        #print(currentcell)
+        # check if it is goal state
         if IsGoalState(goal, currentcell):
             path = []
             current = currentcell
@@ -240,11 +239,11 @@ def Astar(starting, trap, goal, possibleMoves):
             print("The solution path is " + " – ".join(map(coordinate_from_index, path[::-1])))
 
             return path[::-1]
-        #add current to the closedlist
+        # add current to the closedlist
         closedlist[currentcell] = openlist[currentcell]
-        #remove current from openlist
+        # remove current from openlist
         openlist.pop(currentcell)
-        #get the children of current
+        # get the children of current
         children = possibleMoves[currentcell]
         numberOfExpandedNodes = numberOfExpandedNodes + 1
         for child in children:
@@ -260,7 +259,8 @@ def Astar(starting, trap, goal, possibleMoves):
                     continue
             openlist[child] = fscore
             parentlist[child] = currentcell
-            
+
+
 Astar(starting, trap, goal, possibleMoves)
 
 
@@ -278,9 +278,7 @@ def dfs(startindex, graph):
         if currentindex in expanded:
             continue
         if IsGoalState(goal, currentindex):
-            # print("expanded set: " + "-".join(map(str, expanded)))
             print("number of expanded nodes: " + str(len(expanded)))
-            # print("frontier: " + "-".join(map(str, frontier)))
             print("frontier max size: " + str(frontier_max_size))
             solutionpath.append(currentindex)
             print("solution path: " + " – ".join(map(coordinate_from_index, solutionpath)))
@@ -291,7 +289,6 @@ def dfs(startindex, graph):
                 #  all items of "graph[expandednode]" are in "expanded"
                 if all(item in expanded for item in graph[expandednode]):
                     explored.append(expandednode)
-            # print("explored set: " + "-".join(map(str, explored)))
             print("explored maximum size: " + str(len(explored)))
             return
         for neighbour in graph[currentindex]:
@@ -328,9 +325,7 @@ def dls(startindex, graph, depth_limit):
         if currentindex in expanded:
             continue
         if IsGoalState(goal, currentindex):
-            # print("expanded set: " + "-".join(map(str, expanded)))
             print("number of expanded nodes: " + str(len(expanded)))
-            # print("frontier: " + "-".join(map(str, frontier)))
             print("frontier max size: " + str(frontier_max_size))
             solutionpath.append(currentindex)
             print("solution path: " + " – ".join(map(coordinate_from_index, solutionpath)))
@@ -341,7 +336,6 @@ def dls(startindex, graph, depth_limit):
                 #  all items of "graph[expandednode]" are in "expanded"
                 if all(item in expanded for item in graph[expandednode]):
                     explored.append(expandednode)
-            # print("explored set: " + "-".join(map(str, explored)))
             print("explored maximum size: " + str(len(explored)))
             return True
         for neighbour in graph[currentindex]:
@@ -445,26 +439,15 @@ def bfs(bonus):
 print("\n---Breadth First Search---")
 bfs(trap)
 
-#coordinate of index
-def coordinate_of_index(path):
-    string_path = ""
-    for coordinate in range(path):
-        index = path.get(coordinate)
-        row = (index % 8) + 1
-        column = (index // 8) + 1
-        coordinate.append(row)
-        coordinate.append(column)
-    return string_path
-
-
 
 # calculate f score
 def calculate_scores(goal, cellIndex, costs, hn, fn):
-    #calculate hn
+    # calculate hn
     hn[cellIndex] = CalculateHN(goal, cellIndex)
-    #calculate fn
+    # calculate fn
     fn[cellIndex] = hn[cellIndex]
     return fn[cellIndex]
+
 
 # Greedy Best First Search
 # key = h(n)
@@ -529,6 +512,7 @@ def gbfs(starting, trap, goal, possibleMoves):
             max_frontier = len(children)
         if max_explored < len(closed_list):
             max_explored = len(closed_list)
+
 
 print("\n---Greedy Best First Search---")
 gbfs(starting, trap, goal, possibleMoves)
