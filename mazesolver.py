@@ -421,8 +421,8 @@ def bfs(bonus):
         for child in children:
             if child not in explored_set:
                 if IsGoalState(goal, child):
-                    solution_path.append(child)
                     path = paths[current_cell] + "-" + str(child)
+                    solution_path = list(map(int, path.split("-")))
                     cost = costs[current_cell] + GetCellCost(bonus, goal, child)
                     print("The cost of solution is " + str(cost))
                     print("The number of expanded nodes is  " + str(number_of_expanded_nodes))
