@@ -58,7 +58,6 @@ for i in range(node_number):
             cell_index.append(i - 8)
     
     possibleMoves[i] = cell_index
-print(possibleMoves)
 
 #priority_queue:
 #key = path as a string
@@ -132,13 +131,14 @@ def uniform_cost_search(starting, trap, goal, possibleMoves):
             if child not in explored_set:
                 if IsGoalState(goal, child):
                     path = paths[currentcell] + "-" + str(child)
+                    solution_path = list(map(int, path.split("-")))
                     cost = costs[currentcell] + GetCellCost(trap, goal, child)
                     print("--- Uniform Cost Search ---")
                     print("The cost of the solution: {0}".format(cost))
                     print("The number of expanded nodes: {0}".format(numberOfExpandedNodes))
                     print("The maximum size of the frontier: {0}".format(maxSizeOfFrontier))
                     print("The maximum size of the explored set: {0}".format(maxSizeOfExploredSet))
-                    print("Path: {0}".format(path))
+                    print("Solution Path: " + " - ".join(map(coordinate_from_index, solution_path)))
                     return
                 else:
                     path = paths[currentcell] + "-" + str(child)
@@ -228,14 +228,17 @@ def Astar(starting, trap, goal, possibleMoves):
         if IsGoalState(goal, currentcell):
             path = []
             current = currentcell
-            while parentlist[current] is not -1:
+            while parentlist[current] != -1:
                 path.append(current)
                 current = parentlist[current]
-            print("--- A* Algorithm ---")
+            path.append(startcell)
+            print("\n--- A* Algorithm ---")
             print("The cost of the solution: {0}".format(fn[currentcell]))
             print("The number of expanded nodes: {0}".format(numberOfExpandedNodes))
             print("The maximum size of the frontier: {0}".format(maxSizeOfFrontier))
             print("The maximum size of the explored set: {0}".format(maxSizeOfExploredSet))
+            print("The solution path is " + " – ".join(map(coordinate_from_index, path[::-1])))
+
             return path[::-1]
         #add current to the closedlist
         closedlist[currentcell] = openlist[currentcell]
@@ -262,7 +265,7 @@ Astar(starting, trap, goal, possibleMoves)
 
 
 def dfs(startindex, graph):
-    print("---Depth First Search---")
+    print("\n---Depth First Search---")
     frontier = list()
     frontier_max_size = 0
     frontier.append(startindex)
