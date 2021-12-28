@@ -278,18 +278,18 @@ def dfs(startindex, graph):
         if currentindex in expanded:
             continue
         if IsGoalState(goal, currentindex):
-            print("number of expanded nodes: " + str(len(expanded)))
-            print("frontier max size: " + str(frontier_max_size))
             solutionpath.append(currentindex)
-            print("solution path: " + " – ".join(map(coordinate_from_index, solutionpath)))
             for solindex in solutionpath:
                 solutioncost += GetCellCost(trap, goal, solindex)
-            print("solution cost: " + str(solutioncost))
             for expandednode in expanded:
                 #  all items of "graph[expandednode]" are in "expanded"
                 if all(item in expanded for item in graph[expandednode]):
                     explored.append(expandednode)
-            print("explored maximum size: " + str(len(explored)))
+            print("The cost of the solution: " + str(solutioncost))
+            print("The number of expanded nodes: " + str(len(expanded)))
+            print("The maximum size of the frontier: " + str(frontier_max_size))
+            print("The maximum size of the explored set: " + str(len(explored)))
+            print("The solution path is " + " – ".join(map(coordinate_from_index, solutionpath)))
             return
         for neighbour in graph[currentindex]:
             if neighbour in frontier:
@@ -325,18 +325,18 @@ def dls(startindex, graph, depth_limit):
         if currentindex in expanded:
             continue
         if IsGoalState(goal, currentindex):
-            print("number of expanded nodes: " + str(len(expanded)))
-            print("frontier max size: " + str(frontier_max_size))
             solutionpath.append(currentindex)
-            print("solution path: " + " – ".join(map(coordinate_from_index, solutionpath)))
             for solindex in solutionpath:
                 solutioncost += GetCellCost(trap, goal, solindex)
-            print("solution cost: " + str(solutioncost))
             for expandednode in expanded:
                 #  all items of "graph[expandednode]" are in "expanded"
                 if all(item in expanded for item in graph[expandednode]):
                     explored.append(expandednode)
-            print("explored maximum size: " + str(len(explored)))
+            print("The cost of the solution: " + str(solutioncost))
+            print("The number of expanded nodes: " + str(len(expanded)))
+            print("The maximum size of the frontier: " + str(frontier_max_size))
+            print("The maximum size of the explored set: " + str(len(explored)))
+            print("The solution path is " + " – ".join(map(coordinate_from_index, solutionpath)))
             return True
         for neighbour in graph[currentindex]:
             if neighbour in frontier:
