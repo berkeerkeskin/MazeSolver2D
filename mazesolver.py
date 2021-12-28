@@ -277,12 +277,14 @@ def dfs(startindex, graph):
         currentindex = frontier.pop()
         if currentindex in expanded:
             continue
+        # if current node is a goal spot
         if IsGoalState(goal, currentindex):
             solutionpath.append(currentindex)
             for solindex in solutionpath:
                 solutioncost += GetCellCost(trap, goal, solindex)
             for expandednode in expanded:
-                #  all items of "graph[expandednode]" are in "expanded"
+                # all items of "graph[expandednode]" are in "expanded"
+                # meaning all neighbours of a node are also expanded
                 if all(item in expanded for item in graph[expandednode]):
                     explored.append(expandednode)
             print("The cost of the solution: " + str(solutioncost))
@@ -291,7 +293,9 @@ def dfs(startindex, graph):
             print("The maximum size of the explored set: " + str(len(explored)))
             print("The solution path is " + " – ".join(map(coordinate_from_index, solutionpath)))
             return
+        # adding neighbours to the frontier & adding the current node to the expanded set
         for neighbour in graph[currentindex]:
+            # if node is already in frontier, prevent duplicates
             if neighbour in frontier:
                 frontier.remove(neighbour)
             if neighbour not in expanded:
@@ -301,6 +305,7 @@ def dfs(startindex, graph):
         expanded.append(currentindex)
         solutionpath.append(currentindex)
         checkdeadendindex = currentindex
+        # to roll back from dead ends
         while all(item in expanded for item in graph[checkdeadendindex]):
             solutionpath.pop()
             checkdeadendindex = solutionpath[len(solutionpath)-1]
@@ -324,12 +329,12 @@ def dls(startindex, graph, depth_limit):
         currentindex = frontier.pop()
         if currentindex in expanded:
             continue
+        # if current node is a goal spot
         if IsGoalState(goal, currentindex):
             solutionpath.append(currentindex)
             for solindex in solutionpath:
                 solutioncost += GetCellCost(trap, goal, solindex)
             for expandednode in expanded:
-                #  all items of "graph[expandednode]" are in "expanded"
                 if all(item in expanded for item in graph[expandednode]):
                     explored.append(expandednode)
             print("The cost of the solution: " + str(solutioncost))
@@ -338,6 +343,7 @@ def dls(startindex, graph, depth_limit):
             print("The maximum size of the explored set: " + str(len(explored)))
             print("The solution path is " + " – ".join(map(coordinate_from_index, solutionpath)))
             return True
+        # adding neighbours to the frontier & adding the current node to the expanded set
         for neighbour in graph[currentindex]:
             if neighbour in frontier:
                 frontier.remove(neighbour)
@@ -347,27 +353,35 @@ def dls(startindex, graph, depth_limit):
                     frontier_max_size = len(frontier)
         expanded.append(currentindex)
         solutionpath.append(currentindex)
+        # if length of the solution path is equal to the depth limit (when depth limit is reached)
         if len(solutionpath) - 1 == depth_limit:
+        # when solutionpath becomes empty (after the pop operations below), return and move on to the next depth level
             if solutionpath:
+                # return from last added
                 solutionpath.pop()
             else:
                 return False
             if solutionpath:
+                # pop a node to later check if branching is possible from that node
                 checklimitindex = solutionpath.pop()
             else:
                 return False
+            # check if branching is possible
             while all(item in expanded for item in graph[checklimitindex]):
                 if solutionpath:
+                    # roll back if all neighbours are also expanded
                     checklimitindex = solutionpath.pop()
                 else:
                     return False
             solutionpath.append(checklimitindex)
+            # if a node is removed from the expanded set, it's children is removed from the frontier
             for n in graph[currentindex]:
                 if n in frontier:
                     frontier.remove(n)
             expanded.remove(currentindex)
             continue
         checkdeadendindex = currentindex
+        # to roll back from dead ends
         while all(item in expanded for item in graph[checkdeadendindex]):
             solutionpath.pop()
             checkdeadendindex = solutionpath[-1]
