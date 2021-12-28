@@ -420,7 +420,6 @@ def bfs(bonus):
     # solution path
     solution_path = list()
     number_of_expanded_nodes = 0
-    solution_path = []
     while len(queue) != 0:
         # pop
         current_cell = queue.pop()
@@ -455,7 +454,7 @@ bfs(trap)
 
 
 # calculate f score
-def calculate_scores(goal, cellIndex, costs, hn, fn):
+def calculate_scores(goal, cellIndex, hn, fn):
     # calculate hn
     hn[cellIndex] = CalculateHN(goal, cellIndex)
     # calculate fn
@@ -515,7 +514,7 @@ def gbfs(starting, trap, goal, possibleMoves):
                 continue
 
             costs[child] = costs[current_cell] + GetCellCost(trap, goal, child)
-            fscore = calculate_scores(goal, child, costs, hn, fn)
+            fscore = calculate_scores(goal, child, hn, fn)
             for open_node in open_list:
                 if child == open_node and hn[child] > hn[open_node]:
                     continue
